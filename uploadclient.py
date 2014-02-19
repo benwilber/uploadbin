@@ -2,7 +2,7 @@ import os
 import sys
 import requests
 
-UPLOAD_URL = "http://localhost:5010/upload"
+UPLOAD_URL = "http://uploadbin.sunspot.io/upload"
 
 def upload(path):
     abspath = os.path.abspath(path)

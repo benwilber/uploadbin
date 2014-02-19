@@ -8,6 +8,8 @@ import redis
 
 app = Flask(__name__)
 
+app.config['SERVER_NAME'] = "uploadbin.sunspot.io"
+
 # 16MB max upload size
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
