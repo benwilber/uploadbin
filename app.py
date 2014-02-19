@@ -40,10 +40,10 @@ def save_file(file):
     file_id = random_str(20)
     while not g.r.setnx(file_id, filename):
         file_id = random_str(20)
-    g.r.expire(file_id, app.config['EXPIRE_SECONDS'])
 
     stored_filename = "-".join([file_id, filename])
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], stored_filename))
+    g.r.expire(file_id, app.config['EXPIRE_SECONDS'])
     return file_id, filename
 
 
