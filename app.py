@@ -4,9 +4,11 @@ from string import letters, digits
 
 from flask import Flask, g, abort, url_for, request, send_from_directory
 from werkzeug.utils import secure_filename
+from werkzeug.contrib.fixers import ProxyFix
 import redis
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 app.config['SERVER_NAME'] = "uploadbin.sunspot.io"
 
@@ -64,7 +66,9 @@ def download(file_id):
         abort(404)
     stored_filename = "-".join([file_id, filename])
     return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               stored_filename)
+                               stored_filename,
+                               as_attachment=True,
+                               attachment_filename=filename)
 
 
 if __name__ == '__main__':
