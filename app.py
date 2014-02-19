@@ -44,7 +44,7 @@ def save_file(file):
 
     stored_filename = "-".join([file_id, filename])
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], stored_filename))
-    return file_id
+    return file_id, filename
 
 
 def random_str(length):
@@ -54,17 +54,9 @@ def random_str(length):
 @app.route("/upload", methods=("POST",))
 def upload():
     file = request.files['file']
-    file_id = save_file(file)
-    return url_for('download_redirect', file_id=file_id, _external=True)
-
-
-@app.route("/download/<file_id>", methods=("GET",))
-def download_redirect(file_id):
-    filename = g.r.get(file_id)
-    if filename is None:
-        abort(404)
-    return redirect(url_for('download',
-        file_id=file_id, filename=filename, _external=True))
+    file_id, filename = save_file(file)
+    return url_for('download',
+        file_id=file_id, filename=filename, _external=True)
 
 
 @app.route("/download/<file_id>/<filename>", methods=("GET",))
