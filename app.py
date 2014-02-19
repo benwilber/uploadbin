@@ -2,7 +2,7 @@ import os
 from random import choice
 from string import letters, digits
 
-from flask import Flask, g, abort, url_for, request, send_from_directory
+from flask import Flask, g, abort, url_for, request, redirect, send_from_directory
 from werkzeug.utils import secure_filename
 from werkzeug.contrib.fixers import ProxyFix
 import redis
@@ -10,7 +10,7 @@ import redis
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-app.config['SERVER_NAME'] = "uploadbin.sunspot.io"
+#app.config['SERVER_NAME'] = "uploadbin.sunspot.io"
 
 # 16MB max upload size
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
@@ -53,22 +53,25 @@ def random_str(length):
 
 @app.route("/upload", methods=("POST",))
 def upload():
-    print request.headers
     file = request.files['file']
     file_id = save_file(file)
-    return url_for('download', file_id=file_id, _external=True)
+    return url_for('download_redirect', file_id=file_id, _external=True)
 
 
 @app.route("/download/<file_id>", methods=("GET",))
-def download(file_id):
+def download_redirect(file_id):
     filename = g.r.get(file_id)
     if filename is None:
         abort(404)
+    return redirect(url_for('download',
+        file_id=file_id, filename=filename, _external=True))
+
+
+@app.route("/download/<file_id>/<filename>", methods=("GET",))
+def download(file_id, filename):
     stored_filename = "-".join([file_id, filename])
     return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               stored_filename,
-                               as_attachment=True,
-                               attachment_filename=filename)
+                               stored_filename)
 
 
 if __name__ == '__main__':
