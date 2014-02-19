@@ -10,10 +10,8 @@ import redis
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
-#app.config['SERVER_NAME'] = "uploadbin.sunspot.io"
-
-# 16MB max upload size
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+# max upload size (100MB)
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 # Directory to save files on the server
 app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), "uploads")
