@@ -59,6 +59,9 @@ def upload():
 
 @app.route("/download/<file_id>/<filename>", methods=("GET",))
 def download(file_id, filename):
+    fname = g.r.get(file_id)
+    if not fname or fname != filename:
+        abort(404)
     stored_filename = "-".join([file_id, filename])
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                stored_filename)
